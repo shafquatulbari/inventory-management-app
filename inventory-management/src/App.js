@@ -5,6 +5,7 @@ import '../src/App.css';
 
 
 function Detail({ item }) {
+    // Displays item details
     return (
         <div>
             <h3>{item.name}</h3>
@@ -16,9 +17,11 @@ function Detail({ item }) {
 }
 
 function App() {
+    // Redux Hooks
     const items = useSelector((state) => state);
     const dispatch = useDispatch();
 
+    // Define component state
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
     const [price, setPrice] = useState("");
@@ -26,8 +29,11 @@ function App() {
     const [selectedItem, setSelectedItem] = useState(null);
 
     const handleSubmit = (e) => {
+        // Prevents page reload
         e.preventDefault();
+        // Dispatch add item action
         dispatch(addItem({ name, description, price, image }));
+        // Clear inputs
         setName("");
         setDescription("");
         setPrice("");
@@ -35,6 +41,7 @@ function App() {
     };
 
     const handleClear = () => {
+        // Clears input fields
         setName("");
         setDescription("");
         setPrice("");
@@ -42,12 +49,15 @@ function App() {
     };
 
     const handleDelete = (item) => {
+        // Dispatch delete item action
         dispatch(deleteItem(item));
+        // Deselect deleted item
         if (selectedItem === item) {
             setSelectedItem(null);
         }
     }
 
+    // Render component
     return (
         <div className="App">
             <h1>My Inventory</h1>
@@ -72,3 +82,4 @@ function App() {
 }
 
 export default App; 
+//Used Chatgpt for commenting code
