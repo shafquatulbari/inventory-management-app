@@ -1,6 +1,7 @@
 // Action types
 const ADD_ITEM = 'ADD_ITEM';
 const DELETE_ITEM = 'DELETE_ITEM';
+const CLEAR_ITEMS = 'CLEAR_ITEMS';
 
 //ADD_ITEM and DELETE_ITEM are constants representing action types. The addItem and deleteItem functions are action creators.
 // Action creators
@@ -14,6 +15,10 @@ export const addItem = (item) => ({
 export const deleteItem = (item) => ({
     type: DELETE_ITEM,
     payload: item
+});
+
+export const clearItems = () => ({
+    type: CLEAR_ITEMS
 });
 
 // Initial state
@@ -30,6 +35,8 @@ const itemsReducer = (state = initialState, action) => {
             //The reducer uses the ... (spread) operator to return a new state array that includes the new item or exclude the deleted item, rather than modifying the existing state array. This is an example of reducer immutability.
             // If action is DELETE_ITEM, remove the payload from the state
             return state.filter(item => item !== action.payload);
+        case CLEAR_ITEMS:
+            return [];
         default:
             // If action is none of the above, return the current state
             return state;

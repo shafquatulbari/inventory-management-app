@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { addItem, deleteItem } from '../src/redux/items';
+import { addItem, deleteItem, clearItems } from '../src/redux/items';
 import '../src/App.css';
 
 //The Detail component is a simple functional component that takes an item prop and displays its details:
@@ -37,6 +37,7 @@ function App() {
       fetch('http://localhost:3000/items')
         .then(response => response.json())
         .then(data => {
+          dispatch(clearItems());  // dispatch clearItems action before adding items
           data.forEach(item => dispatch(addItem(item)));
         });
     }, [dispatch]);
@@ -55,7 +56,7 @@ function App() {
         setPrice("");
         setImage("");
       });
-    };
+  };
 
     const handleClear = () => {
       setName("");
