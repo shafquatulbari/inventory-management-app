@@ -17,14 +17,7 @@ export const deleteItem = (item) => ({
 });
 
 // Initial state
-const initialState = [
-    {
-        name: 'BOX',
-        description: 'this is just a simple box.',
-        price: 10.00,
-        image: 'https://img.uline.com/is/image/uline/S-4061?$Mobile_Zoom$'
-    }
-];
+const initialState = [];
 
 // Reducer
 //The itemsReducer is a function that takes the current state and an action as arguments and returns the new state
