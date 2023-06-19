@@ -33,6 +33,18 @@ app.delete('/items/:name', function(req, res) {
   res.status(200).end();
 });
 
+app.put('/items/:name', function(req, res) {
+  const name = req.params.name;
+  const updatedItem = req.body;
+  const index = items.findIndex(item => item.name === name);
+  if (index !== -1) {
+    items[index] = updatedItem;
+    res.json(updatedItem);
+  } else {
+    res.status(404).json({ error: 'Item not found' });
+  }
+});
+
 app.listen(3000, function () {
   console.log('App is listening on port 3000!');
 });

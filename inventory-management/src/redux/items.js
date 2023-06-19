@@ -2,6 +2,7 @@
 const ADD_ITEM = 'ADD_ITEM';
 const DELETE_ITEM = 'DELETE_ITEM';
 const CLEAR_ITEMS = 'CLEAR_ITEMS';
+const EDIT_ITEM = 'EDIT_ITEM';
 
 //ADD_ITEM and DELETE_ITEM are constants representing action types. The addItem and deleteItem functions are action creators.
 // Action creators
@@ -21,6 +22,11 @@ export const clearItems = () => ({
     type: CLEAR_ITEMS
 });
 
+export const editItem = (item) => ({
+    type: EDIT_ITEM,
+    payload: item
+});
+
 // Initial state
 const initialState = [];
 
@@ -37,6 +43,10 @@ const itemsReducer = (state = initialState, action) => {
             return state.filter(item => item !== action.payload);
         case CLEAR_ITEMS:
             return [];
+        case EDIT_ITEM:
+            return state.map(item => 
+                item.name === action.payload.name ? action.payload : item
+            );
         default:
             // If action is none of the above, return the current state
             return state;

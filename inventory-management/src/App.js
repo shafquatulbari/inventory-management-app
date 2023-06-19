@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { addItem, deleteItem, clearItems } from '../src/redux/items';
+import { addItem, deleteItem, clearItems,editItem } from '../src/redux/items';
 import '../src/App.css';
 
 //The Detail component is a simple functional component that takes an item prop and displays its details:
@@ -22,27 +22,27 @@ You're also defining some state variables using the useState hook from React.*/
 
 //App component
 function App() {
-    // Redux Hooks
-    const items = useSelector((state) => state);
-    const dispatch = useDispatch();
-    
-    // Define component state
-    const [name, setName] = useState("");
-    const [description, setDescription] = useState("");
-    const [price, setPrice] = useState("");
-    const [image, setImage] = useState("");
-    const [selectedItem, setSelectedItem] = useState(null);
+  const items = useSelector((state) => state);
+  const dispatch = useDispatch();
+  
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [price, setPrice] = useState("");
+  const [image, setImage] = useState("");
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [editing, setEditing] = useState(false);
+  const [editedName, setEditedName] = useState("");
 
-    useEffect(() => {
-      fetch('http://localhost:3000/items')
-        .then(response => response.json())
-        .then(data => {
-          dispatch(clearItems());  // dispatch clearItems action before adding items
-          data.forEach(item => dispatch(addItem(item)));
-        });
-    }, [dispatch]);
+  useEffect(() => {
+    fetch('http://localhost:3000/items')
+      .then(response => response.json())
+      .then(data => {
+        dispatch(clearItems());
+        data.forEach(item => dispatch(addItem(item)));
+      });
+  }, [dispatch]);
 
-    const handleSubmit = (e) => {
+  const handleSubmit = (e) => {
       e.preventDefault();
       const newItem = { name, description, price, image };
       fetch('http://localhost:3000/items', {
@@ -58,14 +58,14 @@ function App() {
       });
   };
 
-    const handleClear = () => {
+  const handleClear = () => {
       setName("");
       setDescription("");
       setPrice("");
       setImage("");
-    };
+  };
 
-    const handleDelete = (item) => {
+  const handleDelete = (item) => {
       fetch(`http://localhost:3000/items/${item.name}`, {
         method: 'DELETE',
       }).then(() => {
@@ -76,6 +76,33 @@ function App() {
       });
   };
 
+  const handleEdit = (item) => {
+      setName(item.name);
+      setDescription(item.description);
+      setPrice(item.price);
+      setImage(item.image);
+      setEditedName(item.name);
+      setEditing(true);
+  };
+
+  const handleUpdate = (e) => {
+      e.preventDefault();
+      const updatedItem = { name, description, price, image };
+      fetch(`http://localhost:3000/items/${editedName}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedItem)
+      }).then(response => response.json())
+      .then(data => {
+        dispatch(editItem(data));
+        setName("");
+        setDescription("");
+        setPrice("");
+        setImage("");
+        setEditing(false);
+      });
+  };
+
     /*Finally, in the return statement of App, 
     you create a form for adding items and display a list of items. 
     You also use the Detail component to display the details of the selected item.*/
@@ -83,24 +110,25 @@ function App() {
     // Render component
     return (
       <div className="App">
-          <h1>My Inventory</h1>
-          <form onSubmit={handleSubmit}>
-              <input type="text" value={name} onChange={e => setName(e.target.value)} placeholder="Item Name" />
-              <input type="text" value={description} onChange={e => setDescription(e.target.value)} placeholder="Description" />
-              <input type="number" value={price} onChange={e => setPrice(e.target.value)} placeholder="$$$" />
-              <input type="text" value={image} onChange={e => setImage(e.target.value)} placeholder="Image URL" />
-              <button type="submit">Add Item</button>
-              <button type="button" onClick={handleClear}>Clear</button>
-          </form>
-          {items.map(item => (
-              <div key={item.name} onClick={() => setSelectedItem(item)}>
-                  <h3>{item.name}</h3>
-                  <img className="item-image" src={item.image} alt={item.name} />
-                  <button onClick={(e) => {e.stopPropagation(); handleDelete(item)}}>Delete</button>
-              </div>
-          ))}
-          {selectedItem && <Detail item={selectedItem} />}
-      </div>
+            <h1>My Inventory</h1>
+            <form onSubmit={editing ? handleUpdate : handleSubmit}>
+                <input type="text" value={name} onChange={e => setName(e.target.value)} placeholder="Item Name" />
+                <input type="text" value={description} onChange={e => setDescription(e.target.value)} placeholder="Description" />
+                <input type="number" value={price} onChange={e => setPrice(e.target.value)} placeholder="$$$" />
+                <input type="text" value={image} onChange={e => setImage(e.target.value)} placeholder="Image URL" />
+                <button type="submit">{editing ? 'Update Item' : 'Add Item'}</button>
+                <button type="button" onClick={handleClear}>Clear</button>
+            </form>
+            {items.map(item => (
+                <div key={item.name} onClick={() => setSelectedItem(item)}>
+                    <h3>{item.name}</h3>
+                    <img className="item-image" src={item.image} alt={item.name} />
+                    <button onClick={(e) => {e.stopPropagation(); handleDelete(item)}}>Delete</button>
+                    <button onClick={(e) => {e.stopPropagation(); handleEdit(item)}}>Edit</button>
+                </div>
+            ))}
+            {selectedItem && <Detail item={selectedItem} />}
+        </div>
   );
 }
 
