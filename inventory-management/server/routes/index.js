@@ -1,85 +1,80 @@
-// Import necessary modules
-var express = require('express'); // Express.js for web server
-var cors = require('cors'); // Enable CORS
-var mongoose = require('mongoose'); // Mongoose for MongoDB interactions
+// Importing necessary modules
+var express = require('express'); // For creating the server
+var cors = require('cors'); // For handling Cross-Origin Resource Sharing
+var mongoose = require('mongoose'); // For connecting and interacting with MongoDB
 
-// Create an instance of express
-var app = express(); 
+// Create an Express app
+var app = express();
 
-// Connect to MongoDB database
-mongoose.connect('mongodb+srv://m001-student:m001-mongodb-basics@sandbox.3z3axor.mongodb.net/?retryWrites=true&w=majority');
-
-// Define Mongoose schema for items in the database
-const itemSchema = new mongoose.Schema({
-  name: String,
-  description: String,
-  price: Number,
-  image: String,
-  itemPurchaser: String
+// Connect to the MongoDB server using Mongoose
+// Replace this string with your own MongoDB URI
+mongoose.connect(`mongodb+srv://m001-student:m001-mongodb-basics@sandbox.3z3axor.mongodb.net/?retryWrites=true&w=majority`, { 
+    useNewUrlParser: true, // Use new URL parser instead of the deprecated one
+    useUnifiedTopology: true, // Use new Server Discover and Monitoring engine
 });
 
-// Create Mongoose model from the schema
+// Define the schema for items
+const itemSchema = new mongoose.Schema({
+  name: String, // Name of the item
+  description: String, // Description of the item
+  price: Number, // Price of the item
+  image: String, // Image of the item
+  itemPurchaser: String // Who bought the item
+});
+
+// Create a model based on the schema
 const Item = mongoose.model('Item', itemSchema);
 
-// Enable CORS
+// Middleware to enable CORS
 app.use(cors());
-
-// Parse JSON bodies in requests
+// Middleware to parse JSON bodies from HTTP requests
 app.use(express.json());
 
-// Define route to get all items
-app.get('/items', function(req, res) {
-  Item.find({}, function(err, items) {
-    if (err) {
-      console.log(err);
-      res.status(500).end();
-    } else {
-      res.json(items);
-    }
-  });
+// GET endpoint to get all items
+app.get('/items', async function(req, res) {
+  try {
+    const items = await Item.find({}); // Get all items from the DB
+    res.json(items); // Send all items as a response
+  } catch (err) {
+    res.status(500).json({ message: err.message }); // Send error message if there's an error
+  }
 });
 
-// Define route to add new items
-app.post('/items', function(req, res) {
-  const newItem = new Item(req.body);
-  newItem.save(function(err) {
-    if (err) {
-      console.log(err);
-      res.status(500).end();
-    } else {
-      res.status(201).json(newItem);
-    }
-  });
+// POST endpoint to create a new item
+app.post('/items', async function(req, res) {
+  const newItem = new Item(req.body); // Create a new item using the body of the request
+  try {
+    const savedItem = await newItem.save(); // Save the item to the DB
+    res.status(201).json(savedItem); // Send the saved item as a response
+  } catch (err) {
+    console.error('Error in saving:', err); // Log the error
+    res.status(500).json({ message: err.message }); // Send error message if there's an error
+  }
 });
 
-// Define route to delete an item
-app.delete('/items/:name', function(req, res) {
-  const name = req.params.name;
-  Item.deleteOne({ name: name }, function(err) {
-    if (err) {
-      console.log(err);
-      res.status(500).end();
-    } else {
-      res.status(200).end();
-    }
-  });
+// DELETE endpoint to delete an item
+app.delete('/items/:id', async function(req, res) {
+  try {
+    await Item.findByIdAndRemove(req.params.id); // Find the item by its ID and remove it from the DB
+    res.status(204).end(); // Send no content response after successful deletion
+  } catch (err) {
+    res.status(500).json({ message: err.message }); // Send error message if there's an error
+  }
 });
 
-// Define route to update an item
-app.put('/items/:name', function(req, res) {
-  const name = req.params.name;
-  const updatedItem = req.body;
-  Item.findOneAndUpdate({ name: name }, updatedItem, { new: true }, function(err, result) {
-    if (err) {
-      console.log(err);
-      res.status(500).end();
-    } else {
-      res.json(result);
-    }
-  });
+// PUT endpoint to update an item
+app.put('/items/:id', async function(req, res) {
+  try {
+    const updatedItem = await Item.findByIdAndUpdate(req.params.id, req.body, { new: true }); // Find the item by its ID and update it
+    res.json(updatedItem); // Send the updated item as a response
+  } catch (err) {
+    res.status(500).json({ message: err.message }); // Send error message if there's an error
+  }
 });
 
-// Start the server
+// Start the server on port 3000
 app.listen(3000, function () {
-  console.log('App is listening on port 3000!');
-}); 
+  console.log('App is listening on port 3000!'); // Log to console when the server starts listening
+});
+
+//Wasn't too sure about how to implement correctly so took some help with chatgpt for implementation of mongoose and in commenting my code as well
