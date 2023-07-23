@@ -28,3 +28,5 @@ describe('itemsReducer', () => {
 }); // End of 'describe' function
 
 //took help from chatgpt to write tests and comment
+
+//npm install jest --save-dev
