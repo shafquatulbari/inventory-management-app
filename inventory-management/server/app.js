@@ -6,6 +6,10 @@ var mongoose = require('mongoose'); // For connecting and interacting with Mongo
 // Create an Express app
 var app = express();
 
+const corsOptions = {
+  origin: "https://bari-deploy-client.onrender.com", // frontend URI (ReactJS)
+}
+
 // Connect to the MongoDB server using Mongoose
 // Replace this string with your own MongoDB URI
 mongoose.connect(`mongodb+srv://m001-student:m001-mongodb-basics@sandbox.3z3axor.mongodb.net/?retryWrites=true&w=majority`, { 
@@ -27,6 +31,7 @@ const Item = mongoose.model('Item', itemSchema);
 
 // Middleware to enable CORS
 app.use(cors());
+app.use(cors(corsOptions));
 // Middleware to parse JSON bodies from HTTP requests
 app.use(express.json());
 
