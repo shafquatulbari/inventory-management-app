@@ -35,7 +35,7 @@ function App() {
 
   // Running an effect to fetch the items when the component mounts
   useEffect(() => {
-    fetch('http://localhost:3001/items')
+    fetch('https://bari-deploy-server.onrender.com/items')
       .then(response => response.json())
       .then(data => {
         dispatch(clearItems()); // Clearing items in redux store
@@ -48,7 +48,7 @@ function App() {
     e.preventDefault(); // Preventing the default form submit action
     const newItem = { name, description, price, image, itemPurchaser }; // Creating a new item object
     // Making a POST request to the server with the new item
-    fetch('http://localhost:3001/items', {
+    fetch('https://bari-deploy-server.onrender.com/items', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(newItem)
@@ -83,7 +83,7 @@ function App() {
   // Handler function to delete an item
   const handleDelete = (item) => {
       // Making a DELETE request to the server with the item id
-      fetch(`http://localhost:3001/items/${item._id}`, {
+      fetch(`https://bari-deploy-server.onrender.com/${item._id}`, {
         method: 'DELETE',
       }).then(() => {
         dispatch(deleteItem(item)); // Removing the item from redux store
@@ -110,7 +110,7 @@ function App() {
       e.preventDefault(); // Preventing the default form submit action
       const updatedItem = { name, description, price, image, itemPurchaser }; // Creating the updated item object
       // Making a PUT request to the server with the updated item
-      fetch(`http://localhost:3001/items/${editedId}`, {
+      fetch(`https://bari-deploy-server.onrender.com/${editedId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedItem)
